@@ -194,3 +194,30 @@ tbody tr:nth-last-child(-n+2) .row-menu {
     color: var(--text-muted);
   }
 }
+/* monogram stand-in for currencies with no flag asset */
+.account-flag--mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--action-soft);
+  color: var(--action);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.table-state {
+  padding: var(--s6) 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.table-state--error {
+  color: var(--text);
+}
+
+.table-retry {
+  color: var(--action);
+  font-weight: 600;
+  text-decoration: underline;
+}

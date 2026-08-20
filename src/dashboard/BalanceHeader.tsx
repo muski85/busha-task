@@ -1,7 +1,20 @@
+import type { Balance } from "../lib/busha";
+import { amountParts, sumAmounts } from "../lib/busha";
 import balanceInfoIcon from "../assets/circle-eyes.svg";
-import greenArrowUp from "../assets/greenarrow-up.svg";
 
-const BalanceHeader = () => {
+interface BalanceHeaderProps {
+  balances: Balance[];
+  loading: boolean;
+}
+
+const BalanceHeader = ({ balances, loading }: BalanceHeaderProps) => {
+  // each balance reports its own NGN equivalent, so the portfolio total is
+  // just their sum - added as decimal strings, never as floats
+  const total = sumAmounts(
+    balances.map((b) => b.total.fiat?.amount ?? "0"),
+  );
+  const { whole, fraction } = amountParts(total);
+
   return (
     <div className="balance">
       <div className="balance-label">
@@ -9,12 +22,14 @@ const BalanceHeader = () => {
         <img src={balanceInfoIcon} alt="" width="14" height="14" />
       </div>
       <div className="balance-amount">
-        ₦124,383,938<span className="balance-decimal">.00</span>
-      </div>
-      <div className="balance-delta">
-        <span className="balance-delta-amount">+₦200,053.44</span>
-        <img src={greenArrowUp} alt="" width="16" height="16" />
-        <span className="balance-delta-pct">8.22%</span>
+        {loading ? (
+          <span className="balance-loading">—</span>
+        ) : (
+          <>
+            ₦{whole}
+            <span className="balance-decimal">.{fraction}</span>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,14 @@
+.coin-icon {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.coin-icon--mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
