@@ -8,6 +8,7 @@ interface AccountTableProps {
   loading: boolean;
   error: string | null;
   onRetry: () => void;
+  onConvert: (currency: string) => void;
 }
 
 export default function AccountTable({
@@ -15,6 +16,7 @@ export default function AccountTable({
   loading,
   error,
   onRetry,
+  onConvert,
 }: AccountTableProps) {
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -60,6 +62,7 @@ export default function AccountTable({
             isOpen={openId === bal.id}
             onToggle={() => setOpenId((cur) => (cur === bal.id ? null : bal.id))}
             onClose={() => setOpenId(null)}
+            onConvert={onConvert}
           />
         ))}
       </tbody>

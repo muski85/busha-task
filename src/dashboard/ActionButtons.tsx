@@ -18,11 +18,20 @@ const actions = [
   { id: "more", label: "More" },
 ];
 
-const ActionButtons = () => {
+interface ActionButtonsProps {
+  onTrade: () => void;
+}
+
+const ActionButtons = ({ onTrade }: ActionButtonsProps) => {
   return (
     <div className="actions">
       {actions.map((a) => (
-        <button key={a.id} type="button" className="action">
+        <button
+          key={a.id}
+          type="button"
+          className="action"
+          onClick={a.id === "trade" ? onTrade : undefined}
+        >
           <span
             className={
               a.primary ? "action-btn action-btn--primary" : "action-btn"
