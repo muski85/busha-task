@@ -51,16 +51,6 @@
   line-height: 1;
   color: #000000;
 }
-.balance-delta {
-  display: none;               
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;       
-  line-height: 16px;     
-  font-weight: 400;
-}
-.balance-delta-amount { color: var(--text-muted); }
-.balance-delta-pct { color: #12a232; font-weight: 500; }
 
 @media (max-width: 768px) {
   .balance {
@@ -73,7 +63,6 @@
   }
   .balance-label { min-height: 32px; }
   .balance-amount { margin-top: 0; line-height: 36px; }
-  .balance-delta { display: flex; justify-content: center; }
 }
 
 
