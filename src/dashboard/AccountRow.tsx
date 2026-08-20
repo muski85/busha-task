@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { Balance } from "../lib/busha";
 import { formatAmount } from "../lib/busha";
 import CoinIcon from "../components/CoinIcon";
+import type { PriceMap } from "../data/prices";
 import moreIcon from "../assets/dot.svg";
 import arrowDown from "../assets/arrow-down.svg";
 import bankNote from "../assets/bank-note.svg";
@@ -10,6 +11,7 @@ import arrowRight from "../assets/arrow-right.svg";
 
 interface AccountRowProps {
   balance: Balance;
+  price?: PriceMap[string];
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
@@ -24,6 +26,7 @@ const menuItems = [
 
 export default function AccountRow({
   balance,
+  price,
   isOpen,
   onToggle,
   onClose,
@@ -42,10 +45,12 @@ export default function AccountRow({
   }, [isOpen, onClose]);
 
   const held = formatAmount(balance.available.amount, balance.currency);
-  // every balance carries its own NGN equivalent, so no conversion is needed
+  // what the holding is worth, shown under the balance
   const worth = balance.available.fiat
     ? formatAmount(balance.available.fiat.amount, balance.available.fiat.currency)
     : held;
+  // what one unit costs right now, shown in the value column
+  const unitPrice = price ? formatAmount(price.amount, price.currency) : '—';
 
   return (
     <tr className="account-row">
@@ -62,7 +67,7 @@ export default function AccountRow({
         <div>{held}</div>
         {worth !== held && <div className="cell-subvalue">{worth}</div>}
       </td>
-      <td className="cell-value cell-amount">{worth}</td>
+      <td className="cell-value cell-amount">{unitPrice}</td>
       <td
         className={`account-menu-cell${isOpen ? " is-open" : ""}`}
         ref={cellRef}

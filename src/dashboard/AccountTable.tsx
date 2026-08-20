@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './AccountTable.css';
 import type { Balance } from '../lib/busha';
+import type { PriceMap } from '../data/prices';
 import AccountRow from './AccountRow';
 
 interface AccountTableProps {
@@ -9,6 +10,7 @@ interface AccountTableProps {
   error: string | null;
   onRetry: () => void;
   onConvert: (currency: string) => void;
+  prices: PriceMap;
 }
 
 export default function AccountTable({
@@ -17,6 +19,7 @@ export default function AccountTable({
   error,
   onRetry,
   onConvert,
+  prices,
 }: AccountTableProps) {
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -59,6 +62,7 @@ export default function AccountTable({
           <AccountRow
             key={bal.id}
             balance={bal}
+            price={prices[bal.currency]}
             isOpen={openId === bal.id}
             onToggle={() => setOpenId((cur) => (cur === bal.id ? null : bal.id))}
             onClose={() => setOpenId(null)}

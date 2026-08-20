@@ -15,9 +15,10 @@ export default function CoinPicker({ quoteCurrency, onPick }: CoinPickerProps) {
   const [query, setQuery] = useState('');
 
   const results = useMemo(() => {
+    const tradable = pairs.filter((p) => p.is_buy_supported);
     const q = query.trim().toLowerCase();
-    if (!q) return pairs;
-    return pairs.filter(
+    if (!q) return tradable;
+    return tradable.filter(
       (p) =>
         p.base.toLowerCase().includes(q) ||
         p.base_currency_name.toLowerCase().includes(q),

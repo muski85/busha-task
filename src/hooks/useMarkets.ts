@@ -20,11 +20,7 @@ export function useMarkets(currency: string, enabled = true) {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
       const pairs = await getPairs(currency);
-      setState({
-        pairs: pairs.filter((p) => p.is_buy_supported),
-        loading: false,
-        error: null,
-      });
+      setState({ pairs, loading: false, error: null });
     } catch (err) {
       const message =
         err instanceof BushaError ? err.message : 'Could not load markets';

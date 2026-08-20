@@ -9,12 +9,16 @@ import ConvertModal, { type ConvertMode } from '../convert/ConvertModal';
 import TransactionList from './TransactionList';
 import { useBalances } from '../hooks/useBalances';
 import { useTransactions } from '../hooks/useTransactions';
+import { useMarkets } from '../hooks/useMarkets';
+import { buildPrices } from '../data/prices';
 
 const Dashboard = () => {
   // fetched once here and passed down, so the header and the table always
   // agree and we make a single request
   const { balances, loading, error, refresh } = useBalances();
   const txns = useTransactions();
+  const markets = useMarkets('NGN');
+  const prices = buildPrices(markets.pairs, 'NGN');
   const [assetType, setAssetType] = useState<'Cash' | 'Crypto'>('Cash');
   // null = closed; { source } = open, source undefined means pick a default
   const [convert, setConvert] = useState<{ source?: string; mode?: ConvertMode } | null>(null);
@@ -45,6 +49,7 @@ const Dashboard = () => {
           error={error}
           onRetry={refresh}
           onConvert={(source) => setConvert({ source, mode: 'convert' })}
+          prices={prices}
         />
       </div>
 
