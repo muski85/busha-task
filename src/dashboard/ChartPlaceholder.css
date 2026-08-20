@@ -1,0 +1,6 @@
+.chart {
+  width: 100%;
+  height: 264px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(to top, rgba(22, 203, 62, 0.10), transparent);
+}
