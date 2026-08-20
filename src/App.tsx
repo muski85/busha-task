@@ -1,11 +1,8 @@
+import DesktopShell from './shells/DesktopShell'
 
 function App() {
 
-  return (
-    <>
-    h1
-    </>
-  )
+  return <DesktopShell />;
 }
 
 export default App
