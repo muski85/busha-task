@@ -2,20 +2,24 @@ import nigeriaFlag from '../assets/nigeria-flag.svg';
 import kenyaFlag from '../assets/kenya-flag.svg';
 import americanFlag from '../assets/american-flag.svg';
 import britishFlag from '../assets/british-flag.svg';
+import ghanaFlag from '../assets/ghana-flag.svg';
 import btc from '../assets/coins/BTC.svg';
 import eth from '../assets/coins/ETH.svg';
 import usdt from '../assets/coins/USDT.svg';
 import usdc from '../assets/coins/USDC.svg';
+import sol from '../assets/coins/SOL.svg';
 
 const icons: Record<string, string> = {
   NGN: nigeriaFlag,
   KES: kenyaFlag,
   USD: americanFlag,
   GBP: britishFlag,
+  GHS: ghanaFlag,
   BTC: btc,
   ETH: eth,
   USDT: usdt,
   USDC: usdc,
+  SOL: sol,
 };
 
 // the pairs endpoint lists far more coins than we hold artwork for, so the
