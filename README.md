@@ -1,75 +1,87 @@
-# React + TypeScript + Vite
+# Busha Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dashboard built against the [Busha API](https://docs.busha.io), covering the
+full money movement flow: balances, live market prices, and buy / sell /
+convert through quotes and transfers.
 
-Currently, two official plugins are available:
+React 19 + TypeScript + Vite. No runtime dependencies beyond React.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Running locally
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+cp .env.example .env      # then add your sandbox key
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`.env` is gitignored and must never be committed:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```
+BUSHA_BASE_URL=https://api.sandbox.busha.so
+BUSHA_API_KEY=your_sandbox_key
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Note there is no `VITE_` prefix. That is deliberate — see below.
 
+## The API key never reaches the browser
+
+Busha authenticates with a secret key that has full account access. Anything
+Vite exposes to client code ends up readable in the built bundle, so the key
+is kept server side and the browser only ever calls `/api/*`:
+
+| Environment | Handled by |
+| --- | --- |
+| local dev | the vite proxy in `vite.config.ts` |
+| deployed | the edge function in `api/[...path].ts` |
+
+Both attach the `Authorization` header on the way out and rewrite `/api` to
+`/v1`. The client code is identical in either case.
+
+## Endpoints used
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /v1/balances` | balances, portfolio total, cash and crypto split |
+| `GET /v1/pairs` | live prices and minimum trade sizes |
+| `POST /v1/quotes` | locks a rate before a trade |
+| `POST /v1/transfers` | executes a trade from a quote id |
+| `GET /v1/transfers/{id}` | polls until the transfer settles |
+| `GET /v1/transactions` | transaction history |
+
+## How a trade works
+
+```
+quote  ->  review  ->  confirm  ->  transfer  ->  poll  ->  settled
+```
+
+A transfer takes nothing but a `quote_id`, so the quote carries the currencies,
+amounts, rate and channels. That means the rate a user confirms is the rate
+they agreed to, and it is also why buy, sell and convert are one flow rather
+than three: only the `pay_in` and `pay_out` channels differ.
+
+Quotes expire after 30 minutes. The review step counts down and refuses to
+submit an expired quote, offering a re-quote instead.
+
+## Two things the docs do not mention
+
+- A completed conversion reports `funds_converted`, never `completed`. Polling
+  for `completed` alone will never resolve. Terminal status is per category:
+  deposits end at `funds_received`, payouts at `funds_delivered`.
+- Each conversion writes **two** transaction records sharing one reference, a
+  debit leg and a credit leg. Rendered raw, every conversion appears twice.
+
+## Deploying
+
+Vercel picks up both the Vite build and `api/` automatically. Set
+`BUSHA_BASE_URL` and `BUSHA_API_KEY` as environment variables in the project
+settings — not in the repo.
+
+## Project layout
+
+```
+api/          edge function proxy used in production
+src/lib/      typed api client, money helpers, status logic
+src/hooks/    balances, transactions, markets
+src/convert/  quote and transfer flow
+src/dashboard/ balances, prices, history
 ```
