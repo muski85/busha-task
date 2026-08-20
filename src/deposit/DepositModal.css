@@ -1,0 +1,54 @@
+.quote-total {
+  padding-top: var(--s2);
+  border-top: 1px solid var(--border);
+  font-size: 15px;
+}
+
+.deposit-lead {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.bank {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  padding: var(--s4);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.bank > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+  font-size: 14px;
+}
+
+.bank dt {
+  color: var(--text-muted);
+}
+
+.bank dd {
+  font-weight: 600;
+  text-align: right;
+}
+
+.bank-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.deposit-waiting {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.deposit-waiting .spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}

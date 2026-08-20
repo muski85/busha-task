@@ -227,6 +227,21 @@ export function createConversionQuote(
   });
 }
 
+/**
+ * Deposit: same currency in and out, funded by a temporary bank account the
+ * user pays into. Fees differ by currency - NGN takes it out of the amount
+ * sent, KES adds it on top - so always show the quote's own source_amount
+ * rather than what was typed.
+ */
+export function createDepositQuote(currency: string, amount: string) {
+  return createQuote({
+    source_currency: currency,
+    target_currency: currency,
+    source_amount: amount,
+    pay_in: { type: 'temporary_bank_account' },
+  });
+}
+
 /** The transfer body is only ever the quote id - the quote holds everything. */
 export function createTransfer(quote_id: string) {
   return request<Transfer>('/transfers', {

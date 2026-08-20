@@ -10,6 +10,7 @@ interface AccountTableProps {
   error: string | null;
   onRetry: () => void;
   onConvert: (currency: string) => void;
+  onDeposit: (currency: string) => void;
   prices: PriceMap;
 }
 
@@ -19,6 +20,7 @@ export default function AccountTable({
   error,
   onRetry,
   onConvert,
+  onDeposit,
   prices,
 }: AccountTableProps) {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -67,6 +69,7 @@ export default function AccountTable({
             onToggle={() => setOpenId((cur) => (cur === bal.id ? null : bal.id))}
             onClose={() => setOpenId(null)}
             onConvert={onConvert}
+            onDeposit={onDeposit}
           />
         ))}
       </tbody>

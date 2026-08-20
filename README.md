@@ -46,6 +46,8 @@ Note there is no `VITE_` prefix. That is deliberate — see below.
 - Cash / Crypto tabs filtering on the balance type returned by the API
 - Searchable coin list with live prices across every tradable market
 - Buy, sell and convert: quote → review → confirm → transfer → poll → settled
+- Deposit by bank transfer: Busha issues a temporary account, the app shows the
+  fee and credited amount up front, then polls until the funds land
 - Rate locked for 30 minutes with a countdown; an expired quote cannot be
   submitted and offers a re-quote instead
 - Minimum trade size and available balance validated before a quote is
@@ -109,8 +111,10 @@ settings — not in the repo.
 - Inter substitutes Aeonik Pro (licensed font)
 - Coin marks are drawn locally from each currency's own glyph; anything without
   artwork falls back to a monogram tinted from a hash of its code
+- Bank deposit is only supported for NGN and KES; other currencies are
+  rejected by the API with a message the form shows verbatim
 - Not wired up: the chart area (Busha exposes no time-series endpoint), the
-  time-range tabs, sidebar navigation, and Deposit / Send / Withdraw
+  time-range tabs, sidebar navigation, and Send / Withdraw
 
 ## Project layout
 
@@ -119,6 +123,7 @@ api/            edge function proxy used in production
 src/lib/        typed api client, money helpers, status logic
 src/hooks/      balances, transactions, markets
 src/convert/    quote and transfer flow
+src/deposit/    bank deposit flow
 src/dashboard/  balances, prices, history
 src/styles/     design tokens and global styles
 ```
