@@ -2,6 +2,7 @@ import './DesktopShell.css';
 import TopBar from '../layout/TopBar';
 import Sidebar from '../layout/SideBar';
 import Dashboard from '../dashboard/Dashboard';
+import BottomNav from '../layout/BottomNav';
 
 export default function DesktopShell() {
   return (
@@ -13,6 +14,7 @@ export default function DesktopShell() {
             <Dashboard/>
         </main>
       </div>
+      <BottomNav/>
     </div>
   );
 }
