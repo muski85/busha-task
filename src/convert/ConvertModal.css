@@ -185,3 +185,31 @@
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation-duration: 2.4s; }
 }
+
+.picked {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 10px var(--s4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.picked-code {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.picked-change {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--action);
+}
+
+.field-warn {
+  color: #b00020;
+  font-weight: 500;
+}

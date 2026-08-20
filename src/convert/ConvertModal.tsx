@@ -6,6 +6,9 @@ import {
   type Balance,
 } from '../lib/busha';
 import { formatCountdown, useConvert, useCountdown } from './useConvert';
+import CoinPicker from './CoinPicker';
+import CoinIcon from '../components/CoinIcon';
+import type { Pair } from '../lib/busha';
 
 /**
  * Buy, sell and convert are the same quote -> transfer call underneath. Only
@@ -57,12 +60,28 @@ export default function ConvertModal({
   const [to, setTo] = useState(targets[0]?.currency ?? 'USDT');
   const [amount, setAmount] = useState('');
 
+  // buy opens on the market list, the way the product does
+  const [picking, setPicking] = useState(mode === 'buy');
+  // the counter leg of min_buy_amount is the limit in the spending currency,
+  // so the amount box can be checked before we ever ask for a quote
+  const [minimum, setMinimum] = useState<{ amount: string; currency: string } | null>(null);
+
+  const choose = (pair: Pair) => {
+    setTo(pair.base);
+    setMinimum(pair.min_buy_amount?.counter ?? null);
+    setPicking(false);
+  };
+
   const source = balances.find((b) => b.currency === from);
   const available = source?.available.amount ?? '0';
   const remaining = useCountdown(quote);
   const expired = quote ? isQuoteExpired(quote) || remaining <= 0 : false;
 
-  const canQuote = Number(amount) > 0 && from !== to && !busy;
+  const belowMinimum =
+    minimum != null && amount !== '' && Number(amount) < Number(minimum.amount);
+  const overBalance = amount !== '' && Number(amount) > Number(available);
+  const canQuote =
+    Number(amount) > 0 && from !== to && !busy && !belowMinimum && !overBalance;
 
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
@@ -77,7 +96,13 @@ export default function ConvertModal({
           <button type="button" onClick={onClose} aria-label="Close">×</button>
         </header>
 
-        {stage === 'form' && (
+        {stage === 'form' && picking && (
+          <div className="convert-body">
+            <CoinPicker quoteCurrency={from} onPick={choose} />
+          </div>
+        )}
+
+        {stage === 'form' && !picking && (
           <div className="convert-body">
             <label className="field">
               <span>From</span>
@@ -90,18 +115,35 @@ export default function ConvertModal({
               </select>
             </label>
 
-            <label className="field">
-              <span>To</span>
-              <select value={to} onChange={(e) => setTo(e.target.value)}>
-                {targets
-                  .filter((b) => b.currency !== from)
-                  .map((b) => (
-                    <option key={b.id} value={b.currency}>
-                      {b.currency} — {b.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
+            {mode === 'buy' ? (
+              <div className="field">
+                <span>To</span>
+                <div className="picked">
+                  <CoinIcon code={to} size={28} />
+                  <span className="picked-code">{to}</span>
+                  <button
+                    type="button"
+                    className="picked-change"
+                    onClick={() => setPicking(true)}
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="field">
+                <span>To</span>
+                <select value={to} onChange={(e) => setTo(e.target.value)}>
+                  {targets
+                    .filter((b) => b.currency !== from)
+                    .map((b) => (
+                      <option key={b.id} value={b.currency}>
+                        {b.currency} — {b.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            )}
 
             <label className="field">
               <span>Amount</span>
@@ -111,7 +153,17 @@ export default function ConvertModal({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
-              <small>Available {formatAmount(available, from)}</small>
+              {belowMinimum && minimum ? (
+                <small className="field-warn">
+                  Minimum is {formatAmount(minimum.amount, minimum.currency)}
+                </small>
+              ) : overBalance ? (
+                <small className="field-warn">
+                  More than your {from} balance
+                </small>
+              ) : (
+                <small>Available {formatAmount(available, from)}</small>
+              )}
             </label>
 
             {error && <p className="convert-error">{error}</p>}
