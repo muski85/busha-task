@@ -1,0 +1,39 @@
+:root {
+  /* color */
+  --bg: #edf2ed; 
+  --surface: #ffffff;
+  --action: #0c2801;  
+  --action-soft: #d1d9d1;
+  /* brand */
+  --brand: #16cb3e;
+  /* text */
+  --text: #000000;
+  --text-muted: #586558;
+  --border: #e8eee8;
+
+
+  /* spacing */  
+  --s2: 8px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+  --s18: 72px;
+
+  /* radii */
+  --radius-card: 16px; 
+  --radius-md: 12px;  
+  --radius-pill: 999px;
+
+  /*typography */
+   --font: 'Inter', system-ui, sans-serif;
+   --balance-size: 30px; 
+   --balance-line: 52px;
+   --balance-weight: 600; 
+   --balance-tracking: -0.03em;
+   --nav-size: 16px;      
+   --nav-line: 20px;     
+   --nav-weight: 500;     
+   --nav-tracking: -0.01em;
+}
