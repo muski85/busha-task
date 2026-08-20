@@ -1,6 +1,7 @@
 import './DesktopShell.css';
 import TopBar from '../layout/TopBar';
 import Sidebar from '../layout/SideBar';
+import Dashboard from '../dashboard/Dashboard';
 
 export default function DesktopShell() {
   return (
@@ -8,7 +9,9 @@ export default function DesktopShell() {
       <TopBar />
       <div className="body">
         <Sidebar />
-        {/* Dashboard */}
+        <main className="content">
+            <Dashboard/>
+        </main>
       </div>
     </div>
   );
