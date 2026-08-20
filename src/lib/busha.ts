@@ -309,3 +309,43 @@ export function formatAmount(amount: string, currency: string): string {
   const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return `${fraction ? `${grouped}.${fraction}` : grouped} ${currency}`;
 }
+
+/** Split into grouped whole and fixed-width fraction, for styling them apart. */
+export function amountParts(amount: string, decimals = 2) {
+  const [whole = '0', fraction = ''] = amount.split('.');
+  return {
+    whole: whole.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+    fraction: (fraction + '0'.repeat(decimals)).slice(0, decimals),
+  };
+}
+
+/*
+ * Money maths on decimal strings via BigInt.
+ *
+ * Balances arrive as strings precisely so they survive values like
+ * 14.31926227 USDT. Adding them with Number would reintroduce the float error
+ * the string representation exists to avoid, so everything is scaled to
+ * integers, summed exactly, then scaled back.
+ */
+const SCALE = 8;
+
+function toScaled(value: string): bigint {
+  const negative = value.startsWith('-');
+  const digits = negative ? value.slice(1) : value;
+  const [whole = '0', fraction = ''] = digits.split('.');
+  const padded = (fraction + '0'.repeat(SCALE)).slice(0, SCALE);
+  const scaled = BigInt((whole || '0') + padded);
+  return negative ? -scaled : scaled;
+}
+
+function fromScaled(value: bigint): string {
+  const negative = value < 0n;
+  const digits = (negative ? -value : value).toString().padStart(SCALE + 1, '0');
+  const whole = digits.slice(0, -SCALE);
+  const fraction = digits.slice(-SCALE).replace(/0+$/, '');
+  return `${negative ? '-' : ''}${fraction ? `${whole}.${fraction}` : whole}`;
+}
+
+export function sumAmounts(values: string[]): string {
+  return fromScaled(values.reduce((total, v) => total + toScaled(v || '0'), 0n));
+}
