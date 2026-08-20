@@ -56,8 +56,12 @@ export default function ConvertModal({
     config.to ? b.type === config.to : b.currency !== defaultFrom,
   );
 
+  const rankedTargets = [...targets].sort(
+    (a, b) => Number(b.total.fiat?.amount ?? 0) - Number(a.total.fiat?.amount ?? 0),
+  );
+
   const [from, setFrom] = useState(defaultFrom);
-  const [to, setTo] = useState(targets[0]?.currency ?? 'USDT');
+  const [to, setTo] = useState(rankedTargets[0]?.currency ?? 'USDT');
   const [amount, setAmount] = useState('');
 
   // buy opens on the market list, the way the product does
