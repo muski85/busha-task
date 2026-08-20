@@ -8,6 +8,11 @@
  */
 export const config = { runtime: 'edge' };
 
+// declared locally rather than pulling in @types/node: the edge runtime only
+// exposes process.env, and relying on node's full types makes the build
+// depend on devDependencies being installed
+declare const process: { env: Record<string, string | undefined> };
+
 const BASE = process.env.BUSHA_BASE_URL ?? 'https://api.sandbox.busha.so';
 
 export default async function handler(req: Request): Promise<Response> {
