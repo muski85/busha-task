@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { Balance } from "../lib/busha";
 import { formatAmount } from "../lib/busha";
-import { currencyIcon } from "../data/currency";
+import CoinIcon from "../components/CoinIcon";
 import moreIcon from "../assets/dot.svg";
 import arrowDown from "../assets/arrow-down.svg";
 import bankNote from "../assets/bank-note.svg";
@@ -41,7 +41,6 @@ export default function AccountRow({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [isOpen, onClose]);
 
-  const icon = currencyIcon(balance.currency);
   const held = formatAmount(balance.available.amount, balance.currency);
   // every balance carries its own NGN equivalent, so no conversion is needed
   const worth = balance.available.fiat
@@ -52,13 +51,7 @@ export default function AccountRow({
     <tr className="account-row">
       <td>
         <div className="account-name-cell">
-          {icon ? (
-            <img className="account-flag" src={icon} alt="" />
-          ) : (
-            <span className="account-flag account-flag--mono" aria-hidden="true">
-              {balance.currency}
-            </span>
-          )}
+          <CoinIcon code={balance.currency} size={32} />
           <div>
             <div className="account-code">{balance.currency}</div>
             <div className="account-sub">{balance.name}</div>
