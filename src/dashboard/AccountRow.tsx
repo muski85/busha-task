@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
-import type { Account } from "../data/account";
+import type { Balance } from "../lib/busha";
+import { formatAmount } from "../lib/busha";
+import { currencyIcon } from "../data/currency";
 import moreIcon from "../assets/dot.svg";
 import arrowDown from "../assets/arrow-down.svg";
 import bankNote from "../assets/bank-note.svg";
@@ -7,7 +9,7 @@ import refresh from "../assets/refresh.svg";
 import arrowRight from "../assets/arrow-right.svg";
 
 interface AccountRowProps {
-  account: Account;
+  balance: Balance;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
@@ -20,7 +22,7 @@ const menuItems = [
 ];
 
 export default function AccountRow({
-  account,
+  balance,
   isOpen,
   onToggle,
   onClose,
@@ -37,24 +39,35 @@ export default function AccountRow({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [isOpen, onClose]);
 
+  const icon = currencyIcon(balance.currency);
+  const held = formatAmount(balance.available.amount, balance.currency);
+  // every balance carries its own NGN equivalent, so no conversion is needed
+  const worth = balance.available.fiat
+    ? formatAmount(balance.available.fiat.amount, balance.available.fiat.currency)
+    : held;
+
   return (
     <tr className="account-row">
       <td>
         <div className="account-name-cell">
-          <img className="account-flag" src={account.flag} alt="" />
+          {icon ? (
+            <img className="account-flag" src={icon} alt="" />
+          ) : (
+            <span className="account-flag account-flag--mono" aria-hidden="true">
+              {balance.currency}
+            </span>
+          )}
           <div>
-            <div className="account-code">{account.code}</div>
-            <div className="account-sub">{account.name}</div>
+            <div className="account-code">{balance.currency}</div>
+            <div className="account-sub">{balance.name}</div>
           </div>
         </div>
       </td>
       <td className="cell-amount">
-        <div>{account.balance}</div>
-        {account.value !== account.balance && (
-          <div className="cell-subvalue">{account.value}</div>
-        )}
+        <div>{held}</div>
+        {worth !== held && <div className="cell-subvalue">{worth}</div>}
       </td>
-      <td className="cell-value cell-amount">{account.value}</td>
+      <td className="cell-value cell-amount">{worth}</td>
       <td
         className={`account-menu-cell${isOpen ? " is-open" : ""}`}
         ref={cellRef}
