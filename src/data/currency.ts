@@ -7,7 +7,7 @@ import btc from '../assets/coins/BTC.svg';
 import eth from '../assets/coins/ETH.svg';
 import usdt from '../assets/coins/USDT.svg';
 import usdc from '../assets/coins/USDC.svg';
-import sol from '../assets/coins/SOL.svg';
+import sol from '../assets/sol.svg';
 
 const icons: Record<string, string> = {
   NGN: nigeriaFlag,
