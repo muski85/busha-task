@@ -1,0 +1,43 @@
+.actions {
+  display: flex;
+  gap: 1px;
+}
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+  width: 72px;
+}
+.action-btn {
+  display: grid;
+  place-items: center;
+  width: var(--s10);          
+  height: var(--s10);
+  border-radius: var(--radius-pill);
+  background: var(--action-soft);       
+  color: var(--text);
+}
+.action-btn--primary {
+  background: var(--action);    
+  color: var(--brand);          
+}
+.action-label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--text);  
+}
+.action-label--primary {
+  color: var(--action);
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  .actions {
+    justify-content: space-between;
+    gap: 0;
+    width: calc(100% + 2 * var(--s4));
+    margin: 0 calc(-1 * var(--s4));
+  }
+  .action { flex: 0 1 72px; min-width: 0; }
+}
