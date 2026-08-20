@@ -5,7 +5,7 @@ import ActionButtons from './ActionButtons';
 import SegmentedControl from '../components/SegmentedControl';
 import ChartPlaceholder from './ChartPlaceholder';
 import AccountTable from './AccountTable';
-import ConvertModal from '../convert/ConvertModal';
+import ConvertModal, { type ConvertMode } from '../convert/ConvertModal';
 import { useBalances } from '../hooks/useBalances';
 
 const Dashboard = () => {
@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { balances, loading, error, refresh } = useBalances();
   const [assetType, setAssetType] = useState<'Cash' | 'Crypto'>('Cash');
   // null = closed; { source } = open, source undefined means pick a default
-  const [convert, setConvert] = useState<{ source?: string } | null>(null);
+  const [convert, setConvert] = useState<{ source?: string; mode?: ConvertMode } | null>(null);
 
   const visible = balances.filter((b) =>
     assetType === 'Cash' ? b.type === 'fiat' : b.type === 'crypto',
@@ -25,7 +25,7 @@ const Dashboard = () => {
       <div className="dashboard-top">
         <div className="dashboard-header">
           <BalanceHeader balances={balances} loading={loading} />
-          <ActionButtons onTrade={() => setConvert({})} />
+          <ActionButtons onTrade={(mode) => setConvert({ mode })} />
         </div>
         <SegmentedControl options={['1D', '1W', '1M', '1y', 'All']} />
         <ChartPlaceholder />
@@ -41,7 +41,7 @@ const Dashboard = () => {
           loading={loading}
           error={error}
           onRetry={refresh}
-          onConvert={(source) => setConvert({ source })}
+          onConvert={(source) => setConvert({ source, mode: 'convert' })}
         />
       </div>
 
@@ -49,6 +49,7 @@ const Dashboard = () => {
         <ConvertModal
           balances={balances}
           initialSource={convert.source}
+          mode={convert.mode}
           onClose={() => setConvert(null)}
           // a settled conversion changes two balances, so pull them again
           onSettled={refresh}

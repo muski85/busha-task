@@ -7,9 +7,23 @@ import {
 } from '../lib/busha';
 import { formatCountdown, useConvert, useCountdown } from './useConvert';
 
+/**
+ * Buy, sell and convert are the same quote -> transfer call underneath. Only
+ * the currencies on offer differ, so mode filters the lists rather than
+ * forking the flow.
+ */
+export type ConvertMode = 'buy' | 'sell' | 'convert';
+
+const MODES: Record<ConvertMode, { title: string; from: Balance['type'] | null; to: Balance['type'] | null }> = {
+  buy:     { title: 'Buy',     from: 'fiat',   to: 'crypto' },
+  sell:    { title: 'Sell',    from: 'crypto', to: 'fiat'   },
+  convert: { title: 'Convert', from: null,     to: null     },
+};
+
 interface ConvertModalProps {
   balances: Balance[];
   initialSource?: string;
+  mode?: ConvertMode;
   onClose: () => void;
   onSettled: () => void;
 }
@@ -17,23 +31,30 @@ interface ConvertModalProps {
 export default function ConvertModal({
   balances,
   initialSource,
+  mode = 'convert',
   onClose,
   onSettled,
 }: ConvertModalProps) {
+  const config = MODES[mode];
+  const sources = config.from
+    ? balances.filter((b) => b.type === config.from)
+    : balances;
   const { stage, quote, transfer, error, busy, requestQuote, confirm, reset } =
     useConvert(onSettled);
 
   // opening on an empty balance is a dead end, so default to the account
   // holding the most value
-  const funded = [...balances].sort(
+  const funded = [...sources].sort(
     (a, b) => Number(b.total.fiat?.amount ?? 0) - Number(a.total.fiat?.amount ?? 0),
   );
   const defaultFrom = initialSource ?? funded[0]?.currency ?? 'NGN';
 
-  const [from, setFrom] = useState(defaultFrom);
-  const [to, setTo] = useState(
-    funded.find((b) => b.currency !== defaultFrom)?.currency ?? 'USDT',
+  const targets = balances.filter((b) =>
+    config.to ? b.type === config.to : b.currency !== defaultFrom,
   );
+
+  const [from, setFrom] = useState(defaultFrom);
+  const [to, setTo] = useState(targets[0]?.currency ?? 'USDT');
   const [amount, setAmount] = useState('');
 
   const source = balances.find((b) => b.currency === from);
@@ -48,11 +69,11 @@ export default function ConvertModal({
       <div
         className="convert"
         role="dialog"
-        aria-label="Convert"
+        aria-label={config.title}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <header className="convert-head">
-          <h2>Convert</h2>
+          <h2>{config.title}</h2>
           <button type="button" onClick={onClose} aria-label="Close">×</button>
         </header>
 
@@ -61,7 +82,7 @@ export default function ConvertModal({
             <label className="field">
               <span>From</span>
               <select value={from} onChange={(e) => setFrom(e.target.value)}>
-                {balances.map((b) => (
+                {sources.map((b) => (
                   <option key={b.id} value={b.currency}>
                     {b.currency} — {formatAmount(b.available.amount, b.currency)}
                   </option>
@@ -72,7 +93,7 @@ export default function ConvertModal({
             <label className="field">
               <span>To</span>
               <select value={to} onChange={(e) => setTo(e.target.value)}>
-                {balances
+                {targets
                   .filter((b) => b.currency !== from)
                   .map((b) => (
                     <option key={b.id} value={b.currency}>
@@ -177,7 +198,7 @@ export default function ConvertModal({
         {stage === 'done' && (
           <div className="convert-body convert-centre">
             <p className={error ? 'convert-error' : 'convert-done'}>
-              {error ?? 'Conversion complete'}
+              {error ?? `${config.title} complete`}
             </p>
             {!error && transfer && (
               <p className="convert-summary">
