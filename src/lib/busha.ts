@@ -239,6 +239,29 @@ export function getTransfer(id: string) {
   return request<Transfer>(`/transfers/${id}`);
 }
 
+export interface Pair {
+  id: string;
+  base: string;
+  base_currency_name: string;
+  counter: string;
+  counter_currency_name: string;
+  type: string;
+  buy_price: { amount: string; currency: string };
+  sell_price: { amount: string; currency: string };
+  is_buy_supported: boolean;
+  is_sell_supported: boolean;
+  // the counter leg is the limit expressed in the currency being spent, which
+  // is what the amount field is validated against
+  min_buy_amount?: { amount: string; currency: string; counter?: { amount: string; currency: string } };
+  min_sell_amount?: { amount: string; currency: string; counter?: { amount: string; currency: string } };
+}
+
+/** Tradable markets. `currency` filters to pairs quoted in that currency. */
+export function getPairs(currency?: string) {
+  const q = currency ? `?currency=${encodeURIComponent(currency)}` : '';
+  return request<Pair[]>(`/pairs${q}`);
+}
+
 export function getTransactions(limit = 20) {
   return request<Transaction[]>(`/transactions?limit=${limit}`);
 }
