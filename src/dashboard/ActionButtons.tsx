@@ -30,9 +30,10 @@ const tradeMenu: { mode: ConvertMode; label: string; hint: string }[] = [
 
 interface ActionButtonsProps {
   onTrade: (mode: ConvertMode) => void;
+  onDeposit: () => void;
 }
 
-const ActionButtons = ({ onTrade }: ActionButtonsProps) => {
+const ActionButtons = ({ onTrade, onDeposit }: ActionButtonsProps) => {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +61,13 @@ const ActionButtons = ({ onTrade }: ActionButtonsProps) => {
             className="action"
             aria-haspopup={a.id === "trade" ? "menu" : undefined}
             aria-expanded={a.id === "trade" ? open : undefined}
-            onClick={a.id === "trade" ? () => setOpen((v) => !v) : undefined}
+            onClick={
+              a.id === "trade"
+                ? () => setOpen((v) => !v)
+                : a.id === "deposit"
+                  ? onDeposit
+                  : undefined
+            }
           >
             <span
               className={

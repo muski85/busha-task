@@ -16,6 +16,7 @@ interface AccountRowProps {
   onToggle: () => void;
   onClose: () => void;
   onConvert: (currency: string) => void;
+  onDeposit: (currency: string) => void;
 }
 
 const menuItems = [
@@ -31,6 +32,7 @@ export default function AccountRow({
   onToggle,
   onClose,
   onConvert,
+  onDeposit,
 }: AccountRowProps) {
   const cellRef = useRef<HTMLTableCellElement>(null);
 
@@ -91,6 +93,7 @@ export default function AccountRow({
                   onClick={() => {
                     onClose();
                     if (item.label === "Convert") onConvert(balance.currency);
+                    if (item.label === "Deposit") onDeposit(balance.currency);
                   }}
                 >
                   <img className="row-menu-icon" src={item.icon} alt="" />
